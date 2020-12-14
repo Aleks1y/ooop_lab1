@@ -28,7 +28,7 @@ private:
 
 public:
 
-    TritSet(const unsigned int count);
+    TritSet(unsigned int count);
     unsigned int capacity();
     
     class TritReference
@@ -40,24 +40,30 @@ public:
 
     public:
 
-        TritReference(TritSet& set, const unsigned int index) : set(set), index(index) {};
+        TritReference(TritSet& set, unsigned int index) : set(set), index(index) {};
         TritSet& getSet();
         unsigned int getIndex();
-        TritReference& operator=(const trit t);
-        bool operator ==(const trit t);
-        bool operator !=(const trit t);
+        TritReference& operator=(trit trit);
+        bool operator ==(trit trit);
+        bool operator !=(trit trit);
+        bool operator !=(TritReference val);
+        void operator ++();
+        TritReference operator *();
     };
 
     TritSet operator|(TritSet& a);
     TritSet operator&(TritSet& a);
     TritSet operator!();
-    TritReference operator[](const unsigned int index);
+    TritReference operator[](unsigned int index);
+    bool operator !=(TritSet set);
 
     size_t cardinality(trit value);
     unordered_map<trit, int> cardinality();
     void trim(size_t lastIndex);
     size_t length();
     void shrink();
+    TritReference begin();
+    TritReference end();
 };
 
 ostream& operator << (ostream& os, TritSet::TritReference t);
