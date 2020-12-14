@@ -272,3 +272,56 @@ TEST(TritSet, LengthTest)
         EXPECT_EQ(set.length(), j);
     }
 }
+
+TEST(TritSet, Test)
+{
+    TritSet set(1000);
+    // length of internal array
+    size_t allocLength = set.capacity();
+    EXPECT_TRUE(allocLength >= 1000 * 2 / 8 / sizeof(unsigned int));
+
+    set[100000000] = trit::Unknown;
+    assert(allocLength == set.capacity());
+
+    // false, but no exception or memory allocation
+    if (set[2000000000] == trit::True) {}
+    EXPECT_TRUE(allocLength == set.capacity());
+
+    //выделение памяти
+    set[100000000] = trit::True;
+    EXPECT_TRUE(allocLength < set.capacity());
+
+    //no memory operations
+    allocLength = set.capacity();
+    set[100000000] = trit::Unknown;
+    set[1000000] = trit::False;
+    EXPECT_TRUE(allocLength == set.capacity());
+
+    //освобождение памяти до начального значения или 
+    //до значения необходимого для хранения последнего установленного трита
+    //в данном случае для трита 1000000
+    set.shrink();
+    EXPECT_TRUE(allocLength > set.capacity());
+
+    TritSet setA(1000);
+    TritSet setB(2000);
+    TritSet setC = setA & setB;
+    EXPECT_TRUE(setC.capacity() == setB.capacity());
+}
+
+TEST(TritSet, auto)
+{
+    TritSet set(6);
+    size_t allocLength = set.capacity();
+
+    for (auto trit : set)
+    {
+        trit = trit::True;
+        cout << trit;
+    }
+
+    for (size_t i = 0; i < allocLength; i++)
+    {
+        EXPECT_TRUE(set[i] == trit::True);
+    }
+}
