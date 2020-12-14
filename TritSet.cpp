@@ -13,7 +13,7 @@ ostream& operator << (ostream& os, trit a)
         return os << "Unknown";
 }
 
-TritSet::TritSet(const unsigned int count)
+TritSet::TritSet(unsigned int count)
 {
     for (size_t i = 0; i < 8 * sizeof(unsigned int); i += 2)
         unknownMask |= 1 << i;
@@ -66,7 +66,7 @@ TritSet::TritReference& TritSet::TritReference::operator=(const trit t)
     return *this;
 }
 
-bool TritSet::TritReference::operator ==(const trit trit)
+bool TritSet::TritReference::operator ==(trit trit)
 {
     if (index >= set.count)
         return trit == trit::Unknown;
@@ -89,9 +89,24 @@ bool TritSet::TritReference::operator ==(const trit trit)
     }
 }
 
-bool TritSet::TritReference::operator !=(const trit trit)
+bool TritSet::TritReference::operator !=(trit trit)
 {
     return !(this->operator ==(trit));
+}
+
+bool TritSet::TritReference::operator !=(TritReference val)
+{
+    return this->set != val.set || this->index != val.index;
+}
+
+void TritSet::TritReference::operator ++()
+{
+    (this->index)++;
+}
+
+TritSet::TritReference TritSet::TritReference::operator *()
+{
+    return *this;
 }
 
 TritSet TritSet::operator|(TritSet& a)
@@ -151,6 +166,11 @@ TritSet TritSet::operator!()
 TritSet::TritReference TritSet::operator[](const unsigned int index)
 {
     return TritReference(*this, index);
+}
+
+bool TritSet::operator !=(TritSet set)
+{
+    return this->arr != set.arr;
 }
 
 size_t TritSet::cardinality(trit value)
@@ -222,6 +242,16 @@ void TritSet::shrink()
         }
         count = indexLastTrit + 1;
     }
+}
+
+TritSet::TritReference TritSet::begin()
+{
+    return (*this)[0];
+}
+
+TritSet::TritReference TritSet::end()
+{
+    return (*this)[this->count];
 }
 
 ostream& operator << (ostream& os, TritSet::TritReference t)
